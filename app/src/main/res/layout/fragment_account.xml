@@ -17,6 +17,21 @@
             android:textColor="@color/black"
             android:textSize="30sp"
             android:fontFamily="@font/spoqahansansneo_bold" />
+
+        <Button
+            android:id="@+id/account_btn_logout"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="로그아웃"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="right"
+            android:fontFamily="@font/spoqahansansneo_bold"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:background="@drawable/layout_dialog_radius"
+            android:backgroundTint="@color/whitegrey" />
     </androidx.appcompat.widget.Toolbar>
 
     <ScrollView
@@ -64,16 +79,6 @@
                             android:textSize="25sp"
                             android:fontFamily="@font/spoqahansansneo_bold" />
 
-                        <TextView
-                            android:id="@+id/account_btn_logout"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="25dp"
-                            android:text="로그아웃"
-                            android:textColor="@color/grey"
-                            android:textSize="20sp"
-                            android:fontFamily="@font/spoqahansansneo_bold" />
-
                     </LinearLayout>
 
                     <LinearLayout
@@ -113,7 +118,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="내가 좋아한 글"
+                            android:text="좋아한 글"
                             android:textColor="@color/grey"
                             android:textSize="25sp"
                             android:fontFamily="@font/spoqahansansneo_bold"

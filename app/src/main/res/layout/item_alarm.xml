@@ -3,8 +3,15 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginRight="20dp"
-    android:layout_marginLeft="20dp">
+    android:background="@color/alarm_color"
+    android:id="@+id/alarm_layout">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -15,7 +22,7 @@
             android:id="@+id/alarm_img_profile"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_anonymity"/>
+            android:src="@drawable/ic_profile"/>
         <TextView
             android:id="@+id/alarm_tv_content"
             android:layout_width="wrap_content"
@@ -43,6 +50,8 @@
             android:textColor="@color/whitegrey"
             android:textSize="20sp"
             android:fontFamily="@font/spoqahansansneo_medium"/>
+
+    </LinearLayout>
 
     </LinearLayout>
 

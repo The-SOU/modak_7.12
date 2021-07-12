@@ -1,5 +1,6 @@
 package com.example.modaktestone.navigation
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.modaktestone.LoginActivity
+import com.example.modaktestone.MainActivity
 import com.example.modaktestone.databinding.FragmentAccountBinding
 import com.example.modaktestone.databinding.ItemContentBinding
 import com.example.modaktestone.navigation.account.*
@@ -48,9 +52,10 @@ class AccountFragment : Fragment() {
         uid = arguments?.getString("destinationUid")
 
 
-        //이름과 글 수 카운트
+        //이름과 글 수 카운트, 프로필 가져오기
         getName()
         getPostCount()
+        getProfileImage()
 
         //로그아웃 버튼 클릭
         binding.accountBtnLogout.setOnClickListener {
@@ -81,6 +86,13 @@ class AccountFragment : Fragment() {
             var intent = Intent(v.context, MyInquiryActivity::class.java)
             startActivity(intent)
         }
+
+        binding.accountIvProfile.setOnClickListener {
+            var photoPickerIntent = Intent(Intent.ACTION_PICK)
+            photoPickerIntent.type = "image/*"
+            activity?.startActivityForResult(photoPickerIntent, PICK_PROFILE_FROM_ALBUM)
+        }
+
 
 
         return view
@@ -155,9 +167,9 @@ class AccountFragment : Fragment() {
         var postDTOs: ArrayList<ContentDTO> = arrayListOf()
         firestore?.collection("contents")?.whereEqualTo("uid", currentUserUid)
             ?.addSnapshotListener { querySnapshot, firebaseFirestoreExeption ->
-                if(querySnapshot == null)return@addSnapshotListener
+                if (querySnapshot == null) return@addSnapshotListener
                 postDTOs.clear()
-                for(snapshot in querySnapshot.documents){
+                for (snapshot in querySnapshot.documents) {
                     var item = snapshot.toObject(ContentDTO::class.java)
                     postDTOs.add(item!!)
                     binding.accountTvPostcount.text = postDTOs.size.toString()
@@ -165,7 +177,21 @@ class AccountFragment : Fragment() {
             }
     }
 
-    private fun clearToken(uid: String){
+    private fun clearToken(uid: String) {
         FirebaseDatabase.getInstance().getReference("tokens").child(uid).removeValue()
+    }
+
+    fun getProfileImage() {
+        firestore?.collection("users")?.document(uid!!)
+            ?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                if(documentSnapshot==null)return@addSnapshotListener
+                if(documentSnapshot?.data!!["profileUrl"] != null){
+                    var url = documentSnapshot?.data!!["profileUrl"]
+                    if(activity!=null){
+                        Glide.with(activity!!
+                        ).load(url).apply(RequestOptions().circleCrop()).into(binding.accountIvProfile)
+                    }
+                }
+            }
     }
 }

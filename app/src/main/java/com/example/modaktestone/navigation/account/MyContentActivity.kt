@@ -42,7 +42,7 @@ class MyContentActivity : AppCompatActivity() {
         ab.setDisplayShowTitleEnabled(false)
         ab.setDisplayShowCustomEnabled(true)
         ab.setDisplayHomeAsUpEnabled(true)
-        binding.boardcontentTextviewBoardname.text = "나의 글"
+        binding.boardcontentTextviewBoardname.text = "내가 쓴 글"
 
         //리사이클러뷰 어댑터 설정
         binding.boardcontentRecyclerview.adapter = MyContentRecyclerViewAdapter()

@@ -13,6 +13,15 @@
         android:layout_height="45dp"
         android:gravity="center_vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="개인정보"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:fontFamily="@font/spoqahansansneo_bold" />
+
     </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout
@@ -28,21 +37,22 @@
         android:id="@+id/selectexplain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="거주하고 계신 지역을 선택해주세요."
+        android:text="거주하고 있는 \n지역을 선택해주세요"
         android:layout_below="@+id/toolbar_division"
         android:textSize="25sp"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:textColor="@color/black"
         android:fontFamily="@font/spoqahansansneo_bold"
         />
 
     <Spinner
         android:id="@+id/selectregion_spinner"
-        android:layout_margin="10dp"
-        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/selectexplain"
         android:background="@drawable/spinner_background"/>
@@ -51,21 +61,22 @@
         android:id="@+id/selectexplain_second"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="성별을 선택해주세요."
+        android:text="성별을 선택해주세요"
         android:layout_below="@+id/selectregion_spinner"
         android:textSize="25sp"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:textColor="@color/black"
         android:fontFamily="@font/spoqahansansneo_bold"
         />
 
     <Spinner
         android:id="@+id/selectregion_spinner_sex"
-        android:layout_margin="10dp"
-        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/selectexplain_second"
         android:background="@drawable/spinner_background"/>
@@ -74,62 +85,42 @@
         android:id="@+id/selectexplain_third"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="출생년도를 선택해주세요."
+        android:text="출생년도를 선택해주세요"
         android:layout_below="@+id/selectregion_spinner_sex"
         android:textSize="25sp"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:textColor="@color/black"
         android:fontFamily="@font/spoqahansansneo_bold"
         />
 
     <Spinner
         android:id="@+id/selectregion_spinner_birth"
-        android:layout_margin="10dp"
-        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/selectexplain_third"
         android:background="@drawable/spinner_background"/>
 
-    <TextView
-        android:id="@+id/createname"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="활동하실 이름을 정해주세요. "
-        android:layout_below="@+id/selectregion_spinner_birth"
-        android:textSize="25sp"
-        android:layout_margin="10dp"
-        android:textColor="@color/black"
-        android:fontFamily="@font/spoqahansansneo_bold"
-        />
-
-    <EditText
-        android:id="@+id/selectregion_edittext_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/createname"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textSize="25sp"
-        android:maxLength="10"
-        android:hint="최대 10글자까지 가능합니다."/>
-
     <LinearLayout
-        android:layout_below="@id/selectregion_edittext_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginTop="20dp">
+        android:layout_below="@+id/selectregion_spinner_birth"
+        android:layout_marginTop="40dp">
 
         <Button
             android:id="@+id/selectregion_btn"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="시작하기"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="다음"
             android:textStyle="bold"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textColor="@color/white"
             android:background="@drawable/layout_dialog_radius"
             android:fontFamily="@font/spoqahansansneo_bold"

@@ -69,6 +69,7 @@ class BoardContentActivity : AppCompatActivity() {
             var intent = Intent(v.context, AddContentActivity::class.java)
             intent.putExtra("selectedCategory", destinationCategory)
             startActivity(intent)
+            finish()
         }
 
         //툴바 설정

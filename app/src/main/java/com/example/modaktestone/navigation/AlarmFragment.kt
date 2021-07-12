@@ -1,6 +1,8 @@
 package com.example.modaktestone.navigation
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +25,9 @@ class AlarmFragment : Fragment() {
     private var _binding: FragmentAlarmBinding? = null
     private val binding get() = _binding!!
 
+    private var uid: String? = null
+    var alarmUidList: ArrayList<String> = arrayListOf()
+
     var firestore: FirebaseFirestore? = null
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +39,7 @@ class AlarmFragment : Fragment() {
 
         //초기화
         firestore = FirebaseFirestore.getInstance()
+        uid = FirebaseAuth.getInstance().currentUser?.uid
 
         binding.alarmfragmentRecyclerview.adapter = AlarmRecyclerViewAdapter()
         binding.alarmfragmentRecyclerview.layoutManager = LinearLayoutManager(this.activity)
@@ -45,7 +51,6 @@ class AlarmFragment : Fragment() {
         ab!!.setDisplayShowTitleEnabled(false)
         ab!!.setDisplayShowCustomEnabled(true)
 
-
         return view
     }
 
@@ -53,15 +58,15 @@ class AlarmFragment : Fragment() {
         var alarmDTOList: ArrayList<AlarmDTO> = arrayListOf()
 
         init {
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-
             FirebaseFirestore.getInstance().collection("alarms").whereEqualTo("destinationUid", uid)
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     alarmDTOList.clear()
+                    alarmUidList.clear()
                     if (querySnapshot == null) return@addSnapshotListener
 
                     for (snapshot in querySnapshot.documents) {
                         alarmDTOList.add(snapshot.toObject(AlarmDTO::class.java)!!)
+                        alarmUidList.add(snapshot.id)
                     }
                     notifyDataSetChanged()
                 }
@@ -85,6 +90,11 @@ class AlarmFragment : Fragment() {
                     view.alarm_tv_content.text = str_0
                     view.alarm_tv_timestamp.text =
                         SimpleDateFormat("MM/dd HH:mm").format(alarmDTOList!![position].timestamp)
+                    //이미 읽었다면 하양색으로 하
+                    if(alarmDTOList[position].didYouRead.containsKey(uid)){
+                        view.alarm_layout.setBackgroundColor(Color.WHITE)
+                    }
+
                 }
                 //댓글 알람일 때
                 1 -> {
@@ -92,7 +102,9 @@ class AlarmFragment : Fragment() {
                     view.alarm_tv_content.text = str_1
                     view.alarm_tv_timestamp.text =
                         SimpleDateFormat("MM/dd HH:mm").format(alarmDTOList!![position].timestamp)
-
+                    if(alarmDTOList[position].didYouRead.containsKey(uid)){
+                        view.alarm_layout.setBackgroundColor(Color.WHITE)
+                    }
                 }
             }
             //알림 클릭 시 해당페이지로 화면 이동
@@ -136,5 +148,24 @@ class AlarmFragment : Fragment() {
             return alarmDTOList.size
         }
 
+    }
+
+    fun checkRead() {
+        for(snapshot in alarmUidList){
+            var tsDoc = firestore?.collection("alarms")?.document(snapshot)
+            firestore?.runTransaction { transaction ->
+                var alarmDTO = transaction.get(tsDoc!!).toObject(AlarmDTO::class.java)
+                alarmDTO!!.didYouRead[uid!!] = true
+                transaction.set(tsDoc, alarmDTO)
+                return@runTransaction
+            }
+        }
+
+    }
+
+    //화면이 끝날 때 이 1을 추가해서 다음 화면에서 반영된 모습으로 나오게 나온다. 이번화면에는 반영안되게.
+    override fun onDestroyView() {
+        super.onDestroyView()
+        checkRead()
     }
 }

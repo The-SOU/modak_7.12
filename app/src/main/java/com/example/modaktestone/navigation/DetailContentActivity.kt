@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.modaktestone.R
 import com.example.modaktestone.databinding.ActivityDetailContentBinding
 import com.example.modaktestone.databinding.ItemCommentBinding
@@ -73,15 +74,20 @@ class DetailContentActivity : AppCompatActivity() {
         destinationExplain = intent.getStringExtra("destinationExplain")
         imageUrl = intent.getStringExtra("destinationImage")
 
+        //글쓴이 프로필 띄우기
+        getProfileImage()
+
         //컨텐츠 내용 띄우기
         binding.detailcontentTextviewUsername.text = intent.getStringExtra("destinationUsername")
         binding.detailcontentTextviewTitle.text = intent.getStringExtra("destinationTitle")
         binding.detailcontentTextviewExplain.text = intent.getStringExtra("destinationExplain")
         binding.detailcontentTextviewTimestamp.text = intent.getStringExtra("destinationTimestamp")
         binding.detailcontentTvCommentcount.text = intent.getStringExtra("destinationCommentCount")
-        binding.detailcontentTvCommentcountSecond.text = intent.getStringExtra("destinationCommentCount")
+        binding.detailcontentTvCommentcountSecond.text =
+            intent.getStringExtra("destinationCommentCount")
         if (imageUrl != null) {
-            Glide.with(this).load(intent.getStringExtra("destinationImage")).into(binding.detailcontentImageviewImage)
+            Glide.with(this).load(intent.getStringExtra("destinationImage"))
+                .into(binding.detailcontentImageviewImage)
             println("what $imageUrl")
         } else {
             binding.detailcontentImageviewImage.visibility = View.GONE
@@ -208,6 +214,8 @@ class DetailContentActivity : AppCompatActivity() {
 
         var commentUidList: ArrayList<String> = arrayListOf()
 
+        var profileList: ArrayList<String> = arrayListOf()
+
 
         init {
             FirebaseFirestore.getInstance().collection("contents").document(contentUid!!)
@@ -250,6 +258,12 @@ class DetailContentActivity : AppCompatActivity() {
                 holder.binding.commentitemTextviewUsername.text = comments[position].userName
             }
 
+            //프포필 이미지가 있을 경우 리턴
+            if (comments[position].profileUrl != null) {
+                Glide.with(this@DetailContentActivity).load(comments[position].profileUrl)
+                    .apply(RequestOptions().circleCrop()).into(holder.binding.commentitemImgProfile)
+            }
+
             holder.binding.commentitemTextviewComment.text = comments[position].comment
             holder.binding.commentitemTextviewTimestamp.text =
                 SimpleDateFormat("MM/dd HH:mm").format(comments[position].timestamp)
@@ -268,7 +282,8 @@ class DetailContentActivity : AppCompatActivity() {
                 favoriteCommentEvent(contentUid!!, commentUidList[position])
             }
 
-            holder.binding.commentitemTextviewFavoritecount.text = comments[position].favoriteCount.toString()
+            holder.binding.commentitemTextviewFavoritecount.text =
+                comments[position].favoriteCount.toString()
 
         }
 
@@ -281,37 +296,40 @@ class DetailContentActivity : AppCompatActivity() {
     fun commentUpload() {
         var uid = auth?.currentUser?.uid
         var username: String? = null
-            var tsDoc = firestore?.collection("contents")?.document(contentUid!!)
-            firestore?.runTransaction { transaction ->
-                println("Comment_signal")
-                var contentDTO = transaction.get(tsDoc!!).toObject(ContentDTO::class.java)
-                contentDTO!!.comments[auth?.currentUser?.uid!!] = true
+        var profileUrl: String? = null
+        var tsDoc = firestore?.collection("contents")?.document(contentUid!!)
+        firestore?.runTransaction { transaction ->
+            println("Comment_signal")
+            var contentDTO = transaction.get(tsDoc!!).toObject(ContentDTO::class.java)
+            contentDTO!!.comments[auth?.currentUser?.uid!!] = true
 
-                transaction.set(tsDoc, contentDTO)
-                return@runTransaction
+            transaction.set(tsDoc, contentDTO)
+            return@runTransaction
 
-            }
+        }
         println("Comment_upload")
-                firestore?.collection("users")?.document(uid!!)
-                    ?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
-                        if (documentSnapshot == null) return@addSnapshotListener
-                        println("5")
-                        var userDTO = documentSnapshot.toObject(UserDTO::class.java)
-                        username = userDTO?.userName
+        firestore?.collection("users")?.document(uid!!)
+            ?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                if (documentSnapshot == null) return@addSnapshotListener
+                println("5")
+                var userDTO = documentSnapshot.toObject(UserDTO::class.java)
+                username = userDTO?.userName
+                profileUrl = userDTO?.profileUrl
 
-                        var comment = ContentDTO.Comment()
+                var comment = ContentDTO.Comment()
 
-                        comment.uid = FirebaseAuth.getInstance().currentUser?.uid
-                        comment.comment = binding.detailcontentEdittextComment.text.toString()
-                        comment.timestamp = System.currentTimeMillis()
-                        comment.userName = username
+                comment.uid = FirebaseAuth.getInstance().currentUser?.uid
+                comment.comment = binding.detailcontentEdittextComment.text.toString()
+                comment.timestamp = System.currentTimeMillis()
+                comment.userName = username
+                comment.profileUrl = profileUrl
 
-                        FirebaseFirestore.getInstance().collection("contents")
-                            .document(contentUid!!)
-                            .collection("comments").document().set(comment)
+                FirebaseFirestore.getInstance().collection("contents")
+                    .document(contentUid!!)
+                    .collection("comments").document().set(comment)
 
-                        binding.detailcontentEdittextComment.setText("")
-                    }
+                binding.detailcontentEdittextComment.setText("")
+            }
 
 
     }
@@ -327,7 +345,8 @@ class DetailContentActivity : AppCompatActivity() {
 
     fun getCommentFavorite(contentUid: String, commentUid: String) {
         var tsDoc = firestore?.collection("contents")?.document(contentUid)?.collection("comments")
-            ?.document(commentUid)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+            ?.document(commentUid)
+            ?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
                 var commentDTO = documentSnapshot?.toObject(ContentDTO.Comment::class.java)
 
             }
@@ -582,6 +601,20 @@ class DetailContentActivity : AppCompatActivity() {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
+    }
+
+    fun getProfileImage() {
+        firestore?.collection("profileImages")?.document(uid!!)
+            ?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                if (documentSnapshot == null) return@addSnapshotListener
+                if (documentSnapshot.data != null) {
+                    var url = documentSnapshot?.data!!["image"]
+                    Glide.with(
+                        this
+                    ).load(url).apply(RequestOptions().circleCrop())
+                        .into(binding.detailcontentImageviewProfile)
+                }
+            }
     }
 
 //    익명되는 코멘트 업로드

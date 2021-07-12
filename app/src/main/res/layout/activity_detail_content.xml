@@ -160,7 +160,7 @@
                     <ImageView
                         android:layout_width="25dp"
                         android:layout_height="25dp"
-                        android:src="@drawable/ic_favorite" />
+                        android:src="@drawable/ic_favorite_yellow_third" />
 
                     <TextView
                         android:id="@+id/detailcontent_tv_favoritecount"
@@ -183,7 +183,7 @@
                     <ImageView
                         android:layout_width="25dp"
                         android:layout_height="25dp"
-                        android:src="@drawable/ic_comment" />
+                        android:src="@drawable/ic_comment_second" />
 
                     <TextView
                         android:id="@+id/detailcontent_tv_commentcount"

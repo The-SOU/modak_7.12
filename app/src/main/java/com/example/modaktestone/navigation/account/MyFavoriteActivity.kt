@@ -41,7 +41,7 @@ class MyFavoriteActivity : AppCompatActivity() {
         ab.setDisplayShowTitleEnabled(false)
         ab.setDisplayShowCustomEnabled(true)
         ab.setDisplayHomeAsUpEnabled(true)
-        binding.boardcontentTextviewBoardname.text = "내가 좋아한 글"
+        binding.boardcontentTextviewBoardname.text = "좋아요 한 글"
 
         //리사이클러뷰 어댑터
         binding.boardcontentRecyclerview.adapter = MyFavoriteRecyclerViewAdapter()

@@ -87,7 +87,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginRight="5dp"
-                    android:src="@drawable/ic_favorite" />
+                    android:src="@drawable/ic_favorite_yellow_third" />
 
                 <TextView
                     android:id="@+id/item_bestcontent_tv_favoritecount"
@@ -111,7 +111,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginRight="5dp"
-                    android:src="@drawable/ic_comment" />
+                    android:src="@drawable/ic_comment_second" />
 
                 <TextView
                     android:id="@+id/item_bestcontent_tv_commentcount"

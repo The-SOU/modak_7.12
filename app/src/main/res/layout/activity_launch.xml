@@ -15,9 +15,9 @@
 
         <ImageView
             android:id="@+id/launch_btn_administer"
-            android:layout_width="130dp"
+            android:layout_width="200dp"
             android:layout_height="130dp"
-            android:src="@drawable/img_logo_white"
+            android:src="@drawable/img_logo_talk"
             android:layout_gravity="center_horizontal"/>
 
         <ImageView

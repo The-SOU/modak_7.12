@@ -9,5 +9,6 @@ data class AlarmDTO(
     var kind: Int? = null,
     var message: String? = null,
     var timestamp: Long? = null,
-var contentUid : String? = null
+    var contentUid: String? = null,
+    var didYouRead: MutableMap<String, Boolean> = HashMap()
 )

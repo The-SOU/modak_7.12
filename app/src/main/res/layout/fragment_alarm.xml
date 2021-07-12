@@ -23,8 +23,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/alarmfragment_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/alarm_color">
+        android:layout_height="match_parent">
 
     </androidx.recyclerview.widget.RecyclerView>
 

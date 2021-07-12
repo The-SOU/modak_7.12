@@ -21,6 +21,7 @@ data class ContentDTO(
     data class Comment(
         var uid: String? = null,
         var userName: String? = null,
+        var profileUrl: String? = null,
         var comment: String? = null,
         var timestamp: Long? = null,
         var favoriteCount: Int = 0,

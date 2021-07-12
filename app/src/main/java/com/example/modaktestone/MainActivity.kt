@@ -1,6 +1,9 @@
 package com.example.modaktestone
 
+import android.app.Activity
 import android.app.Notification
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -13,11 +16,15 @@ import com.example.modaktestone.navigation.model.PushDTO
 import com.example.modaktestone.navigation.model.UserDTO
 import com.example.modaktestone.navigation.util.FcmPush
 import com.google.android.gms.common.api.Response
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import fcm.androidtoandroid.FirebasePush
 import org.json.JSONArray
 import org.json.JSONException
@@ -97,5 +104,26 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             }
         }
         return false
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == AccountFragment.PICK_PROFILE_FROM_ALBUM && resultCode == Activity.RESULT_OK) {
+            var imageUri = data?.data
+            var uid = FirebaseAuth.getInstance().currentUser?.uid
+            var storageRef =
+                FirebaseStorage.getInstance().reference.child("userProfileImages")?.child(uid!!)
+            storageRef?.putFile(imageUri!!)
+                ?.continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
+                    return@continueWithTask storageRef.downloadUrl
+                }?.addOnCompleteListener {
+                storageRef.downloadUrl
+                    .addOnSuccessListener(OnSuccessListener<Uri?> { uri ->
+                        var map = HashMap<String, Any>()
+                        map["profileUrl"] = uri.toString()
+                        FirebaseFirestore.getInstance().collection("users").document(uid!!).update(map)
+                    })
+            }
+        }
     }
 }

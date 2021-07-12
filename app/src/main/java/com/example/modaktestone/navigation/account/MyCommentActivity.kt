@@ -41,7 +41,7 @@ class MyCommentActivity : AppCompatActivity() {
         ab.setDisplayShowTitleEnabled(false)
         ab.setDisplayShowCustomEnabled(true)
         ab.setDisplayHomeAsUpEnabled(true)
-        binding.boardcontentTextviewBoardname.text = "내가 쓴 댓글"
+        binding.boardcontentTextviewBoardname.text = "나의 댓글"
 
         //리사이클러뷰 어댑터
         binding.boardcontentRecyclerview.adapter = MyCommentRecyclerViewAdapter()

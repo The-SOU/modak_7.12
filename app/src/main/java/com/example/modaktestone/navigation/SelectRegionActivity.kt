@@ -1,15 +1,19 @@
 package com.example.modaktestone.navigation
 
-import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.InputFilter
+import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.SpinnerAdapter
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.modaktestone.MainActivity
 import com.example.modaktestone.R
 import com.example.modaktestone.databinding.ActivitySelectRegionBinding
@@ -18,7 +22,8 @@ import com.example.modaktestone.navigation.model.UserDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
-import javax.xml.datatype.DatatypeConstants.MONTHS
+import java.util.regex.Pattern
+
 
 class SelectRegionActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySelectRegionBinding
@@ -33,30 +38,40 @@ class SelectRegionActivity : AppCompatActivity() {
     var region: String? = null
     var sex: String? = null
     var birth: String? = null
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySelectRegionBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
+        //초기화
         uid = FirebaseAuth.getInstance().currentUser?.uid
 
-        binding.selectregionBtn.setOnClickListener {
-            usernameAndRegion()
-            moveMainPage()
-
-        }
         setupSpinnerRegion()
         setupSpinnerSex()
         setupSpinnerBirth()
         setupSpinnerHandler()
 
+        binding.selectregionBtn.isEnabled = false
+        binding.selectregionBtn.backgroundTintList =
+            ContextCompat.getColorStateList(applicationContext, R.color.whitegrey)
+
+
+        //시작하기 버튼 클릭.
+        binding.selectregionBtn.setOnClickListener { v ->
+            var intent = Intent(v.context, CreateNameActivity::class.java)
+            intent.putExtra("destinationRegion", region)
+            intent.putExtra("destinationSex", sex)
+            intent.putExtra("destinationBirth", birth)
+            startActivity(intent)
+        }
+
         //키보드 숨기기
         binding.layout.setOnClickListener {
             hideKeyboard()
         }
-
-
 
 
     }
@@ -127,6 +142,7 @@ class SelectRegionActivity : AppCompatActivity() {
         binding.selectregionSpinnerBirth.adapter = spinnerAdapterBirth
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupSpinnerHandler() {
         binding.selectregionSpinnerSex.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -136,10 +152,23 @@ class SelectRegionActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    if (!binding.selectregionSpinnerSex.getItemAtPosition(position).equals("성별")) {
-                        val item =
-                            binding.selectregionSpinnerSex.getItemAtPosition(position) as SpinnerModel
+                    val item =
+                        binding.selectregionSpinnerSex.getItemAtPosition(position) as SpinnerModel
+                    if (item.name != "성별") {
                         sex = item.name
+                        if (region != null && birth != null) {
+                            binding.selectregionBtn.isEnabled = true
+                            binding.selectregionBtn.backgroundTintList =
+                                ContextCompat.getColorStateList(
+                                    applicationContext,
+                                    R.color.dots_color
+                                )
+                        }
+                    } else {
+                        binding.selectregionBtn.isEnabled = false
+                        binding.selectregionBtn.backgroundTintList =
+                            ContextCompat.getColorStateList(applicationContext, R.color.whitegrey)
+
                     }
 
                 }
@@ -156,10 +185,55 @@ class SelectRegionActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    if (!binding.selectregionSpinner.getItemAtPosition(position).equals("지역")) {
-                        val item =
-                            binding.selectregionSpinner.getItemAtPosition(position) as SpinnerModel
+                    val item =
+                        binding.selectregionSpinner.getItemAtPosition(position) as SpinnerModel
+                    if (item.name != "region") {
                         region = item.name
+                        if (birth != null && sex != null) {
+                            binding.selectregionBtn.isEnabled = true
+                            binding.selectregionBtn.backgroundTintList =
+                                ContextCompat.getColorStateList(
+                                    applicationContext,
+                                    R.color.dots_color
+                                )
+                        }
+                    } else {
+                        binding.selectregionBtn.isEnabled = false
+                        binding.selectregionBtn.backgroundTintList =
+                            ContextCompat.getColorStateList(applicationContext, R.color.whitegrey)
+
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+            }
+
+        binding.selectregionSpinnerBirth.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val item =
+                        binding.selectregionSpinnerBirth.getItemAtPosition(position) as SpinnerModel
+                    if (item.name != "출생연도") {
+                        birth = item.name
+                        if (region != null && sex != null) {
+                            binding.selectregionBtn.isEnabled = true
+                            binding.selectregionBtn.backgroundTintList =
+                                ContextCompat.getColorStateList(
+                                    applicationContext,
+                                    R.color.dots_color
+                                )
+                        }
+                    } else {
+                        binding.selectregionBtn.isEnabled = false
+                        binding.selectregionBtn.backgroundTintList =
+                            ContextCompat.getColorStateList(applicationContext, R.color.whitegrey)
+
                     }
                 }
 
@@ -168,43 +242,12 @@ class SelectRegionActivity : AppCompatActivity() {
 
             }
 
-        binding.selectregionSpinnerBirth.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                if(!binding.selectregionSpinnerBirth.getItemAtPosition(position).equals("출생연도")){
-                    val item = binding.selectregionSpinnerBirth.getItemAtPosition(position) as SpinnerModel
-                    birth = item.name
-                }
-            }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-
-        }
     }
 
-    fun usernameAndRegion() {
-        var userDTO = UserDTO()
-        userDTO.uid = FirebaseAuth.getInstance().currentUser?.uid
-        userDTO.region = region
-        userDTO.sex = sex
-        userDTO.birth = birth
-        userDTO.userName = binding.selectregionEdittextName.text.toString()
-        FirebaseFirestore.getInstance().collection("users").document(uid!!).set(userDTO)
-    }
-
-    fun moveMainPage() {
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
-    }
-
-    fun hideKeyboard(){
+    fun hideKeyboard() {
         val view = this.currentFocus
-        if(view != null){
+        if (view != null) {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
